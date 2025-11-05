@@ -1,0 +1,95 @@
+:root{
+  --bg:#000000;        /* fondo negro */
+  --fg:#ffffff;        /* texto principal */
+  --muted:#9aa0a6;     /* separadores */
+  --up:#00d26a;        /* verde subidas */
+  --down:#ff3b3b;      /* rojo bajadas */
+  --brand:#0a1626;     /* azul AG para la caja de hora */
+  --h:50px;            /* override desde app.py */
+  --pad:12px;
+  --gap:22px;          /* override desde app.py */
+  --sepw:12px;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif;
+}
+
+/* Streamlit reset */
+.block-container { padding:0 !important; }
+.stApp > header { height:0; }
+main { padding-top:0 !important; }
+
+/* Barra base */
+.ticker-wrap{
+  position:relative;
+  width:100%;
+  height:var(--h);
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--font);
+  overflow:hidden;
+  border-top:1px solid #111;
+  border-bottom:1px solid #111;
+}
+
+/* Cinta animada */
+.ticker-track{
+  position:absolute; top:0; left:0;
+  height:100%;
+  display:flex; align-items:center;
+  gap:var(--gap);
+  white-space:nowrap;
+  padding:0 calc(var(--pad) + 160px); /* aire lateral */
+  will-change: transform;
+}
+.ticker-track.animate{ animation:scroll-left 55s linear infinite; }
+.ticker-track:hover{ animation-play-state: paused; } /* pausa al hover */
+
+@keyframes scroll-left{
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); } /* duplicamos items en HTML */
+}
+
+/* Ítems */
+.ticker-item{
+  display:inline-flex; align-items:center; gap:8px;
+  line-height:1; font-size:14px;
+}
+.ticker-symbol{ font-weight:800; letter-spacing:.3px; }
+.ticker-price{  font-weight:600; opacity:.95; }
+.ticker-chg.up{   color:var(--up);   font-weight:800; }
+.ticker-chg.down{ color:var(--down); font-weight:800; }
+.ticker-sep{
+  display:inline-block; width:var(--sepw);
+  text-align:center; color:var(--muted); opacity:.85;
+}
+
+/* Texto centro fijo */
+.ticker-center{
+  position:absolute; left:50%; top:0; transform:translateX(-50%);
+  height:100%; display:flex; align-items:center;
+  padding:0 14px; gap:10px;
+  color:var(--fg); font-weight:900; letter-spacing:.3px;
+  border-left:1px solid #111; border-right:1px solid #111;
+  background:linear-gradient(90deg, rgba(10,22,38,.35), rgba(10,22,38,.15));
+  backdrop-filter:saturate(140%) blur(1px);
+  text-transform:uppercase;
+}
+
+/* Reloj derecha (AZUL AG) */
+.ticker-clock{
+  position:absolute; right:12px; top:8px;
+  height:calc(var(--h) - 16px);
+  display:flex; align-items:center; justify-content:center;
+  padding:0 12px;
+  color:#ffffff; font-weight:900; letter-spacing:.3px;
+  background:var(--brand);
+  border-radius:6px; border:1px solid #15283f;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+}
+
+/* Separador para que nada quede tapado */
+.ticker-spacer{ height:var(--h); }
+
+/* Compacto */
+@media (max-width:900px){
+  .ticker-item{ font-size:13px; }
+}
