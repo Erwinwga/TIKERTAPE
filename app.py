@@ -115,10 +115,8 @@ def items_html(rows):
 
      # AVISO LEGAL
     parts.append("""
-    <span class="ticker-item">
-      <span class="ticker-symbol">AVISO</span>
-      <span class="ticker-price">CONTENIDO EDUCATIVO</span>
-      <span class="ticker-chg">NO ES RECOMENDACIÓN DE INVERSIÓN</span>
+    <span class="ticker-item ticker-warning">
+      ⚠ AVISO: CONTENIDO EDUCATIVO | NO ES RECOMENDACIÓN DE INVERSIÓN
     </span>
     <span class="ticker-sep">|</span>
     """)
@@ -226,6 +224,12 @@ html_code = f"""
   .ticker-symbol {{ font-weight:800; letter-spacing:.3px; }}
   .ticker-chg.up   {{ color:#00d26a; font-weight:800; }}
   .ticker-chg.down {{ color:#ff3b3b; font-weight:800; }}
+  .ticker-warning{{
+  color:#FFD700;
+  font-weight:900;
+  font-size:18px;
+  letter-spacing:1px;
+  }}
   .ticker-sep {{ color:#9aa0a6; opacity:.9; margin:0 2px; }}
 
   .panel-logo {{
@@ -306,5 +310,6 @@ if auto_refresh and auto_refresh > 0:
     import time
     time.sleep(auto_refresh)
     st.experimental_rerun()
+
 
 
