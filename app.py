@@ -1,4 +1,5 @@
 # app.py
+import pandas as pd
 import os, base64, random
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
@@ -79,17 +80,38 @@ def snapshot_live(symbols):
         return None
     try:
         tickers = [YF_MAP[s] for s in symbols]
-        data = yf.download(" ".join(tickers), period="1d", interval="1m",
-                           group_by="ticker", progress=False, threads=True)
+
+        data = yf.download(
+            tickers=tickers,
+            period="1d",
+            interval="1m",
+            group_by="ticker",
+            progress=False,
+            threads=True,
+            auto_adjust=False,
+            prepost=True
+        )
+
         rows = []
+        multi = isinstance(data.columns, pd.MultiIndex)
+
         for s in symbols:
             t = YF_MAP[s]
-            df = data[t]
-            last = float(df["Close"].dropna().iloc[-1])
-            prev = (yf.Ticker(t).info or {}).get("previousClose") or last
-            chg  = ((last/prev) - 1.0) * 100.0
+            df = data[t] if multi else data
+
+            close = df["Close"].dropna()
+            if close.empty:
+                rows.append((s, float("nan"), 0.0))
+                continue
+
+            last = float(close.iloc[-1])
+            prev = float(close.iloc[-2]) if len(close) >= 2 else last
+
+            chg = ((last / prev) - 1.0) * 100.0 if prev else 0.0
             rows.append((s, last, chg))
+
         return rows
+
     except Exception:
         return None
 
@@ -305,11 +327,13 @@ html_code = f"""
 # Render en iframe (abajo)
 components_html(html_code, height=height_px + 6)
 
-# Autorefresco opcional para actualizar datos (no necesario para el reloj)
+# Autorefresco opcional para actualizar datos (sin bloquear)
 if auto_refresh and auto_refresh > 0:
-    import time
-    time.sleep(auto_refresh)
-    st.experimental_rerun()
+    st.markdown(
+        f"<meta http-equiv='refresh' content='{auto_refresh}'>",
+        unsafe_allow_html=True
+    )
+
 
 
 
