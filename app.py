@@ -112,6 +112,16 @@ def items_html(rows):
             <span class="ticker-sep">|</span>
             """
         )
+
+     # AVISO LEGAL
+    parts.append("""
+    <span class="ticker-item">
+      <span class="ticker-symbol">AVISO</span>
+      <span class="ticker-price">CONTENIDO EDUCATIVO</span>
+      <span class="ticker-chg">NO ES RECOMENDACIÓN DE INVERSIÓN</span>
+    </span>
+    <span class="ticker-sep">|</span>
+    """)
     return parts
 
 # =========================
@@ -296,4 +306,5 @@ if auto_refresh and auto_refresh > 0:
     import time
     time.sleep(auto_refresh)
     st.experimental_rerun()
+
 
