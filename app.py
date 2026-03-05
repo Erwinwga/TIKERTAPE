@@ -69,7 +69,11 @@ def snapshot_fake(symbols):
     return [(s, round(rnd.uniform(50, 5000), 2), rnd.uniform(-2, 2)) for s in symbols]
 
 YF_MAP = {
-    "SPX":"^GSPC","NDX":"^NDX","DJI":"^DJI","RUT":"^RUT","VIX":"^VIX",
+    "SPX":"ES=F",
+    "NDX":"NQ=F",
+    "DJI":"YM=F",
+    "RUT":"RTY=F",
+    "VIX":"^VIX",
     "AAPL":"AAPL","MSFT":"MSFT","AMZN":"AMZN","NVDA":"NVDA","TSLA":"TSLA",
     "META":"META","GOOG":"GOOG","AMD":"AMD","NFLX":"NFLX","JPM":"JPM","BRK.B":"BRK-B",
     "BTCUSD":"BTC-USD","ETHUSD":"ETH-USD","SOLUSD":"SOL-USD","BNBUSD":"BNB-USD","XRPUSD":"XRP-USD"
@@ -333,6 +337,7 @@ if auto_refresh and auto_refresh > 0:
         f"<meta http-equiv='refresh' content='{auto_refresh}'>",
         unsafe_allow_html=True
     )
+
 
 
 
