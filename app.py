@@ -26,6 +26,11 @@ st.sidebar.header("⚙️ Opciones")
 
 # Arrancar en LIVE (yfinance)
 data_src = st.sidebar.radio("Fuente de datos", ["FAKE (demo)", "LIVE (yfinance)"], index=1)
+chg_mode = st.sidebar.selectbox(
+    "Cálculo %",
+    ["VS CIERRE ANTERIOR", "VS OPEN DEL DÍA", "VS VELA ANTERIOR (1m)"],
+    index=0
+)    
 
 # Valores iniciales según tus capturas
 speed_s   = st.sidebar.slider("Velocidad scroll (seg/loop)", 20, 120, 47)
@@ -79,9 +84,10 @@ YF_MAP = {
     "BTCUSD":"BTC-USD","ETHUSD":"ETH-USD","SOLUSD":"SOL-USD","BNBUSD":"BNB-USD","XRPUSD":"XRP-USD"
 }
 
-def snapshot_live(symbols):
+def snapshot_live(symbols, chg_mode: str):
     if not YFINANCE_OK:
         return None
+
     try:
         tickers = [YF_MAP[s] for s in symbols]
 
@@ -109,7 +115,18 @@ def snapshot_live(symbols):
                 continue
 
             last = float(close.iloc[-1])
-            prev = float(close.iloc[-2]) if len(close) >= 2 else last
+
+            # === Selección del modo de % ===
+            if chg_mode == "VS VELA ANTERIOR (1m)":
+                prev = float(close.iloc[-2]) if len(close) >= 2 else last
+
+            elif chg_mode == "VS OPEN DEL DÍA":
+                o = df["Open"].dropna()
+                prev = float(o.iloc[0]) if not o.empty else float(close.iloc[0])
+
+            else:  # "VS CIERRE ANTERIOR"
+                # Aproximación robusta: primer close válido del día (si el premarket está activo, igual es estable)
+                prev = float(close.iloc[0])
 
             chg = ((last / prev) - 1.0) * 100.0 if prev else 0.0
             rows.append((s, last, chg))
@@ -119,7 +136,7 @@ def snapshot_live(symbols):
     except Exception:
         return None
 
-rows = snapshot_live(SEQUENCE) if data_src.startswith("LIVE") else snapshot_fake(SEQUENCE)
+rows = snapshot_live(SEQUENCE, chg_mode) if data_src.startswith("LIVE") else snapshot_fake(SEQUENCE)
 if rows is None:
     rows = snapshot_fake(SEQUENCE)
 
@@ -337,6 +354,7 @@ if auto_refresh and auto_refresh > 0:
         f"<meta http-equiv='refresh' content='{auto_refresh}'>",
         unsafe_allow_html=True
     )
+
 
 
 
